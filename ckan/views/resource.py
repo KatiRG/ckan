@@ -278,8 +278,20 @@ class CreateView(MethodView):
             # go to first stage of add dataset
             return h.redirect_to(u'{}.edit'.format(package_type), id=id)
         elif save_action == u'go-dataset-complete':
-
             return h.redirect_to(u'{}.read'.format(package_type), id=id)
+        elif save_action == u'go-dataset-step2':
+            pkg_dict = get_action(u'package_show')(context, {u'id': id})
+            resource_dict = pkg_dict.get('resources')
+            resource_id_array = [p['id'] for p in resource_dict]
+            last_id = resource_id_array[-1]
+
+            return h.redirect_to(h.url_for(
+                                            u'{}_resource.edit_step2'.format(package_type),
+                                                                       resource_id=last_id,
+                                                                       id=id
+                                          )
+                                )
+
         else:
             # add more resources
             return h.redirect_to(
@@ -721,6 +733,13 @@ class EditResourceViewView(MethodView):
 
         package_type = _get_package_type(id)
         data = extra_vars[u'data'] if u'data' in extra_vars else None
+        
+        # Direct to data dictionary form if in New Resource Workflow
+        baseurl = request.base_url
+        if baseurl.split('/')[-1] == 'edit_step2':
+            # Direct to intermediate template
+            return base.render(u'package/resource_edit_intermediate.html', extra_vars)
+
         if data and u'view_type' in data:
             view_type = data.get(u'view_type')
         else:
@@ -941,6 +960,9 @@ def register_dataset_plugin_rules(blueprint):
         u'/<resource_id>', view_func=read, strict_slashes=False)
     blueprint.add_url_rule(
         u'/<resource_id>/edit', view_func=EditView.as_view(str(u'edit'))
+    )
+    blueprint.add_url_rule(
+        u'/<resource_id>/edit_step2', view_func=EditResourceViewView.as_view(str(u'edit_step2'))
     )
     blueprint.add_url_rule(
         u'/<resource_id>/delete', view_func=DeleteView.as_view(str(u'delete'))

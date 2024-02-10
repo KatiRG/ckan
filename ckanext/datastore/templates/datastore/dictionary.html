@@ -6,16 +6,21 @@
 
 {% block primary_content_inner %}
 
-  {% set action = h.url_for('datastore.dictionary', id=pkg.name, resource_id=res.id) %}
+  {% set is_active = res.datastore_active %}
+  {% if is_active %}
 
-  <form method="post" action="{{ action }}" >
-    {% block dictionary_form %}
-      {% for field in fields %}
-          {% snippet "datastore/snippets/dictionary_form.html", field=field, position=loop.index %}
-      {% endfor %}
-    {% endblock %}
-    <button class="btn btn-primary" name="save" type="submit">
-      <i class="fa fa-book"></i> {{ _('Save') }}
-    </button>
-  </form>
+    {% set action = h.url_for('datastore.dictionary', id=pkg.name, resource_id=res.id) %}
+    <form method="post" action="{{ action }}" >
+      {% block dictionary_form %}
+        {% for field in fields %}
+            {% snippet "datastore/snippets/dictionary_form.html", field=field, position=loop.index %}
+        {% endfor %}
+      {% endblock %}
+      <button class="btn btn-primary" name="save" type="submit">
+        <i class="fa fa-book"></i> {{ _('Save') }}
+      </button>
+    </form>
+    {% else %}
+    <p>Not pushed to db yet</p>
+    {% endif %}
 {% endblock %}

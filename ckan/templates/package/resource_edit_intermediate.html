@@ -1,0 +1,23 @@
+{% extends "package/resource_edit_base.html" %}
+{% import 'macros/form.html' as form %}
+
+{% block subtitle %}{{ _('Edit') }} {{ g.template_title_delimiter }} {{ h.resource_display_name(res) }} {{ g.template_title_delimiter }} {{ h.dataset_display_name(pkg) }}{% endblock %}
+
+
+{% block primary_content_inner %}
+    {% set is_active = res.datastore_active %}
+    {% if not is_active %}
+      <p>Dataset sent for upload...</p>
+    {% endif %} 
+
+    <p>Click to go to Step2: Data Dictionary</p>
+
+    <ul>{% link_for _('Data Dictionary'), named_route='datastore.dictionary',
+                                          id=pkg.name,
+                                          resource_id=res.id,
+                                          class_='btn btn-default'
+        %}
+    </ul>
+
+{% endblock %}
+
