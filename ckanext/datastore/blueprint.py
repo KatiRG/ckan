@@ -155,8 +155,9 @@ class DictionaryView(MethodView):
             )
         )
         return h.redirect_to(
-            u'datastore.dictionary', id=id, resource_id=resource_id
+            u'xloader.resource_data', id=id, resource_id=resource_id
         )
+        
 
 
 def dump_to(
